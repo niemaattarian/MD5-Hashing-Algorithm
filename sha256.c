@@ -91,8 +91,8 @@ int main(int argc, char * argv[]){
     printf("sig1(x)     = %08x\n", sig1(x));
 
     // Print one of the constants
-        printf("K[20]       = %08x\n", K[20]);
-        printf("H[2]        = %08x\n", H[2]);
+    printf("K[20]       = %08x\n", K[20]);
+    printf("H[2]        = %08x\n", H[2]);
         
     return 0;
 }
