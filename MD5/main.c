@@ -1,9 +1,17 @@
-// Niema Attarian - MD5 Hashing Algorithm
+/* Niema Attarian - MD5 Hashing Algorithm */
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 
-// Constants - adapted from https://gist.github.com/creationix/4710780 and https://en.wikipedia.org/wiki/MD5
+/* Constants - adapted from https://gist.github.com/creationix/4710780 and https://en.wikipedia.org/wiki/MD5  */
+/* These will contain the hash  */
+uint32_t a0, b1, c2, d3;
 
+/* Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating  */
+
+/* s specifies the per-round shift amounts  */
 uint32_t s[] = {
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
     5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
@@ -11,7 +19,8 @@ uint32_t s[] = {
     6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
-// Use binary integer part of the sines of integers (in radians) as constants// Initialize variables:
+/* Use binary integer part of the sines of integers (in radians) as constants */
+
 const uint32_t K[] = {
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
     0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -31,23 +40,46 @@ const uint32_t K[] = {
     0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
+/* Initialize variables:  */
+a0 = 0x67452301;   // A
+b0 = 0xefcdab89;   // B
+c0 = 0x98badcfe;   // C
+d0 = 0x10325476;   // D
+
+/* Defining the auxiliary functions that take input of three 32-bit words */
+/*
+    & - bit-wise AND
+    | - bit-wise OR
+    ~ - bit-wise NOT
+    ^ - bit-wise TO THE POWER OF
+    x >> y - Shifting the x value to the right y bits
+    x << y - Shifting the x value to the left y bits
+*/
+#define F(x, y, z) (((x) & (y)) | ((~x) & (z))) /* (X and Y) OR ((not X) and Y) */
+#define G(x, y, z) (((x) & (z)) | ((y) & (~z))) /* (X and Z) OR (Y and (not Z)) */
+#define H(x, y, z) ((x) ^ (y) ^ (z))            /* (X to the power of Y to the power of Z) */
+#define I(x, y, z) ((y) ^ ((x) | (~z)))         /* (Y to the power of (X or (not Z))) */
+
+/* This function rotates x values left n-number of bits */
+#define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+
 int main(int argc, char *argv[]) {
 
-    // Return error if single file name isn't given
+    /* Return error if single file name isn't given  */
     if (argc != 2){
         printf("Error: expected single filename as arguemnt.\n");
         return 1;
     }
 
-    // Reads in the file as a binary file
+    /* Reads in the file as a binary file  */
     FILE *infile = fopen(argv[1], "rb");
-    // Error if file cannot be opened
+    /* Error if file cannot be opened  */
     if(!infile) {
         printf("Error: couldn't open file %s. \n", argv[1]);
         return 1;
     }
 
-    //close the file
+    /* close the file  */
     fclose(infile);
 
     return 0;
