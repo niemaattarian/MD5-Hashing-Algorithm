@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 
-/* Code has been adapted from https://gist.github.com/creationix/4710780 and https://en.wikipedia.org/wiki/MD5  */
+/* Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  */
 /* These will contain the hash  */
 uint32_t hash0, hash1, hash2, hash3;
 
@@ -47,11 +47,13 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
     hash2 = 0x98badcfe;   // C
     hash3 = 0x10325476;   // D
 
+    
     /*  Padding  */
     /*  The initial step of allocating "1" bit to the message
         followed by a number of "0" bits until the length is congruent to 488, modulo 512 in bits
     */
 
+    /* Adapted from https://gist.github.com/creationix/4710780 */
     /* Appending the "1" bit */
     int new_len = ((((initial_len + 8) / 64) + 1) * 64) - 8;
 
@@ -66,25 +68,53 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
     /* Adding the initial bit message input at the end of the buffer in the form of 64-bit representation */
     uint32_t bits_len = 8*initial_len;
     memcpy(msg + new_len, &bits_len, 4); /* Creates a memory block copy */
- 
-    /* Defining the auxiliary functions that take input of three 32-bit words */
+
     /*
-        & - bit-wise AND
-        | - bit-wise OR
-        ~ - bit-wise NOT
-        ^ - bit-wise TO THE POWER OF
         x >> y - Shifting the x value to the right y bits
         x << y - Shifting the x value to the left y bits
     */
-    #define F(x, y, z) (((x) & (y)) | ((~x) & (z))) /* (X and Y) OR ((not X) and Y) */
-    #define G(x, y, z) (((x) & (z)) | ((y) & (~z))) /* (X and Z) OR (Y and (not Z)) */
-    #define H(x, y, z) ((x) ^ (y) ^ (z))            /* (X to the power of Y to the power of Z) */
-    #define I(x, y, z) ((y) ^ ((x) | (~z)))         /* (Y to the power of (X or (not Z))) */
-
     /* This function rotates x values left n-number of bits */
     #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-}
+    /* Process Message in 16-word blocks */
+
+    /* Initialising the MD Buffer */
+    uint32_t A = hash0;
+    uint32_t B = hash1;
+    uint32_t C = hash2;
+    uint32_t D = hash3;
+
+    /* Main loop */
+    int32_t i;
+    for(i = 0; i<64; i++) {
+        int32_t F, g;
+
+        /* Defining the auxiliary functions that take input of three 32-bit words */
+        /*
+            & - bit-wise AND
+            | - bit-wise OR
+            ~ - bit-wise NOT
+            ^ - bit-wise TO THE POWER OF
+        */
+
+        if(0 <= i <= 15){
+            F = (B & C) | ((~B) & D);   /* (B and C) or ((not B) and D) */
+            g = i;
+        }
+        else if(16 <= i <= 31){
+            F = (D & B) | ((~D) & C);   /* (D and B) or ((not D) and C) */
+            g = (5*i + 1) % 16;
+        }
+        else if(32 <= i <= 47){
+            F = B ^ C ^ D;   /* B xor C xor D */
+            g = (3*i + 5) % 16;
+        }
+        else if(48 <= i <= 63){
+            F = C ^ (B | (~D));   /* C xor (B or (not D)) */
+            g = (7*i) % 16;
+        }
+    }// end main loop
+} // MD5
 
 
 int main(int argc, char *argv[]) {
