@@ -8,8 +8,6 @@
 /* These will contain the hash  */
 uint32_t hash0, hash1, hash2, hash3;
 
-
-
 void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes in parameters of any initial messgae of any length */
     /* Preparing the message */
     uint8_t *msg = NULL;
@@ -49,6 +47,26 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
     hash2 = 0x98badcfe;   // C
     hash3 = 0x10325476;   // D
 
+    /*  Padding  */
+    /*  The initial step of allocating "1" bit to the message
+        followed by a number of "0" bits until the length is congruent to 488, modulo 512 in bits
+    */
+
+    /* Appending the "1" bit */
+    int new_len = ((((initial_len + 8) / 64) + 1) * 64) - 8;
+
+    /* Appending the "0" bits (allocating 64 extra bytes) */
+    msg = calloc(new_len + 64, 1);
+
+    memcpy(msg, initial_msg, initial_len);
+    /* Writing the "1" bit to the message */
+    msg[initial_len] = 128;
+
+    /* Appending the length */
+    /* Adding the initial bit message input at the end of the buffer in the form of 64-bit representation */
+    uint32_t bits_len = 8*initial_len;
+    memcpy(msg + new_len, &bits_len, 4); /* Creates a memory block copy */
+ 
     /* Defining the auxiliary functions that take input of three 32-bit words */
     /*
         & - bit-wise AND
@@ -66,11 +84,13 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
     /* This function rotates x values left n-number of bits */
     #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-
 }
 
 
 int main(int argc, char *argv[]) {
+
+    FILE *infile;
+    char filename[1000], c;
 
     /* Return error if single file name isn't given  */
     if (argc != 2){
@@ -79,15 +99,29 @@ int main(int argc, char *argv[]) {
     }
 
     /* Reads in the file as a binary file  */
-    FILE *infile = fopen(argv[1], "rb");
+    /* Opening the File */
+    infile = fopen(argv[1], "rb");
+    
     /* Error if file cannot be opened  */
     if(!infile) {
         printf("Error: couldn't open file %s. \n", argv[1]);
         return 1;
     }
 
+    /* Read contents of the file */
+    c = fgetc(infile); 
+    printf ("======   The contents of the file    ======\n"); 
+    while (c != EOF) 
+    { 
+        /* Prints the contents of file to console */
+        printf ("%c", c); 
+        c = fgetc(infile); 
+    } 
+    printf ("\n"); 
+
+    printf ("\n====== The hashed output of the file ======\n"); 
+
     /* close the file  */
     fclose(infile);
-
     return 0;
 }
