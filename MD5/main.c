@@ -113,7 +113,21 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
             F = C ^ (B | (~D));   /* C xor (B or (not D)) */
             g = (7*i) % 16;
         }
+        /* M[g] must be a 32-bits block */
+        // F = F + A + K[i] + M[g];
+        // A = D;
+        // D = C;
+        // C = B;
+        // B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
     }// end main loop
+
+    /* Add this chunk's hash to results so far */
+    hash0 = hash0 + A;
+    hash1 = hash1 + B;
+    hash2 = hash2 + C;
+    hash3 = hash3 + D;
+
+
 } // MD5
 
 
@@ -149,8 +163,10 @@ int main(int argc, char *argv[]) {
     } 
     printf ("\n"); 
 
+    /* Display hashed output */
     printf ("\n====== The hashed output of the file ======\n"); 
 
+    
     /* close the file  */
     fclose(infile);
     return 0;
