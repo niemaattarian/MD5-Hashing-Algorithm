@@ -9,8 +9,6 @@
 uint32_t hash0, hash1, hash2, hash3;
 
 void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function takes in parameters of any initial messgae of any length */
-    /* Preparing the message */
-    uint8_t *message = NULL;
     
     /* Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating  */
     /* s specifies the per-round shift amounts  */
@@ -57,6 +55,9 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
     /* Appending the "1" bit */
     int new_length = ((((initial_length + 8) / 64) + 1) * 64) - 8;
 
+    /* Preparing the message */
+    uint8_t *message = NULL;
+
     /* Appending the "0" bits (allocating 64 extra bytes) */
     message = calloc(new_length + 64, 1);
 
@@ -77,10 +78,10 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
     #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
     /* Process Message in 16-word blocks */
-    for(int chunk=0; chunk<new_length; chunk += 64)
+    for(int chunk=0; chunk<new_length; chunk += (64))
     {
         /* Break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15 */
-        uint32_t *w = (uint32_t *) (message + chunk);
+        uint32_t *M = (uint32_t *) (message + chunk);
         // char M[64];
         // M[64] = '\0';
         // strncpy(M, &new_length[chunk*64], 64);
@@ -121,11 +122,12 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
                 g = (7*i) % 16;
             }
             /* M[g] must be a 32-bits block */
-            // F = F + A + K[i] + M[g];
+            F = F + A + K[i] + M[g];
             A = D;
             D = C;
             C = B;
             B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
+          
         }// end main loop
 
         /* Add this chunk's hash to results so far */
@@ -170,12 +172,29 @@ int main(int argc, char *argv[]) {
     // } 
     // printf ("\n"); 
 
+    /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
+
+    char *msg = argv[1];
+    size_t len = strlen(msg);
+ 
+    md5(msg, len);
+ 
+    uint8_t *p;
+ 
+    p=(uint8_t *)&hash0;
+    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash0);
+ 
+    p=(uint8_t *)&hash1;
+    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash1);
+ 
+    p=(uint8_t *)&hash2;
+    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash2);
+ 
+    p=(uint8_t *)&hash3;
+    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash3);
     /* Display hashed output */
     printf ("\n====== The hashed output of the file ======\n"); 
     
-    /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
-    
-
     printf("\n");
     /* close the file  */
     // fclose(infile);

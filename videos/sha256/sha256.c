@@ -190,6 +190,6 @@ void nexthash(union block *M, uint32_t *H) {
 
     // Close file
     fclose(infile);
-
+    
     return 0;
  }
