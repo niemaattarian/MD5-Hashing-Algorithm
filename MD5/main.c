@@ -8,9 +8,9 @@
 /* These will contain the hash  */
 uint32_t hash0, hash1, hash2, hash3;
 
-void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes in parameters of any initial messgae of any length */
+void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function takes in parameters of any initial messgae of any length */
     /* Preparing the message */
-    uint8_t *msg = NULL;
+    uint8_t *message = NULL;
     
     /* Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating  */
     /* s specifies the per-round shift amounts  */
@@ -55,19 +55,19 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
 
     /* Adapted from https://gist.github.com/creationix/4710780 */
     /* Appending the "1" bit */
-    int new_len = ((((initial_len + 8) / 64) + 1) * 64) - 8;
+    int new_length = ((((initial_length + 8) / 64) + 1) * 64) - 8;
 
     /* Appending the "0" bits (allocating 64 extra bytes) */
-    msg = calloc(new_len + 64, 1);
+    message = calloc(new_length + 64, 1);
 
-    memcpy(msg, initial_msg, initial_len);
+    memcpy(message, initial_message, initial_length);
     /* Writing the "1" bit to the message */
-    msg[initial_len] = 128;
+    message[initial_length] = 128;
 
     /* Appending the length */
     /* Adding the initial bit message input at the end of the buffer in the form of 64-bit representation */
-    uint32_t bits_len = 8*initial_len;
-    memcpy(msg + new_len, &bits_len, 4); /* Creates a memory block copy */
+    uint32_t bits_length = 8*initial_length;
+    memcpy(message + new_length, &bits_length, 4); /* Creates a memory block copy */
 
     /*
         x >> y - Shifting the x value to the right y bits
@@ -77,97 +77,108 @@ void md5(uint8_t *initial_msg, size_t initial_len){ /* This md5 function takes i
     #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
     /* Process Message in 16-word blocks */
+    for(int chunk=0; chunk<new_length; chunk += 64)
+    {
+        /* Break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15 */
+        uint32_t *w = (uint32_t *) (message + chunk);
+        // char M[64];
+        // M[64] = '\0';
+        // strncpy(M, &new_length[chunk*64], 64);
+        // printf("Chunk(no: %d) %s\n", chunk, M);
+        /* Initialising the MD Buffer */
+        uint32_t A = hash0;
+        uint32_t B = hash1;
+        uint32_t C = hash2;
+        uint32_t D = hash3;
 
-    /* Initialising the MD Buffer */
-    uint32_t A = hash0;
-    uint32_t B = hash1;
-    uint32_t C = hash2;
-    uint32_t D = hash3;
+        /* Main loop */
+        int32_t i;
+        for(i = 0; i<64; i++) {
+            int32_t F, g;
 
-    /* Main loop */
-    int32_t i;
-    for(i = 0; i<64; i++) {
-        int32_t F, g;
+            /* Defining the auxiliary functions that take input of three 32-bit words */
+            /*
+                & - bit-wise AND
+                | - bit-wise OR
+                ~ - bit-wise NOT
+                ^ - bit-wise TO THE POWER OF
+            */
 
-        /* Defining the auxiliary functions that take input of three 32-bit words */
-        /*
-            & - bit-wise AND
-            | - bit-wise OR
-            ~ - bit-wise NOT
-            ^ - bit-wise TO THE POWER OF
-        */
+            if(0 <= i <= 15){
+                F = (B & C) | ((~B) & D);   /* (B and C) or ((not B) and D) */
+                g = i;
+            }
+            else if(16 <= i <= 31){
+                F = (D & B) | ((~D) & C);   /* (D and B) or ((not D) and C) */
+                g = (5*i + 1) % 16;
+            }
+            else if(32 <= i <= 47){
+                F = B ^ C ^ D;              /* B xor C xor D */
+                g = (3*i + 5) % 16;
+            }
+            else if(48 <= i <= 63){
+                F = C ^ (B | (~D));         /* C xor (B or (not D)) */
+                g = (7*i) % 16;
+            }
+            /* M[g] must be a 32-bits block */
+            // F = F + A + K[i] + M[g];
+            A = D;
+            D = C;
+            C = B;
+            B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
+        }// end main loop
 
-        if(0 <= i <= 15){
-            F = (B & C) | ((~B) & D);   /* (B and C) or ((not B) and D) */
-            g = i;
-        }
-        else if(16 <= i <= 31){
-            F = (D & B) | ((~D) & C);   /* (D and B) or ((not D) and C) */
-            g = (5*i + 1) % 16;
-        }
-        else if(32 <= i <= 47){
-            F = B ^ C ^ D;   /* B xor C xor D */
-            g = (3*i + 5) % 16;
-        }
-        else if(48 <= i <= 63){
-            F = C ^ (B | (~D));   /* C xor (B or (not D)) */
-            g = (7*i) % 16;
-        }
-        /* M[g] must be a 32-bits block */
-        // F = F + A + K[i] + M[g];
-        // A = D;
-        // D = C;
-        // C = B;
-        // B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
-    }// end main loop
-
-    /* Add this chunk's hash to results so far */
-    hash0 = hash0 + A;
-    hash1 = hash1 + B;
-    hash2 = hash2 + C;
-    hash3 = hash3 + D;
-
+        /* Add this chunk's hash to results so far */
+        hash0 = hash0 + A;
+        hash1 = hash1 + B;
+        hash2 = hash2 + C;
+        hash3 = hash3 + D;
+    }
 
 } // MD5
 
 
 int main(int argc, char *argv[]) {
 
-    FILE *infile;
-    char filename[1000], c;
+    // FILE *infile;
+    // char filename[1000], c;
 
-    /* Return error if single file name isn't given  */
-    if (argc != 2){
-        printf("Error: expected single filename as arguemnt.\n");
-        return 1;
-    }
+    // /* Return error if single file name isn't given  */
+    // if (argc != 2){
+    //     printf("Error: expected single filename as arguemnt.\n");
+    //     return 1;
+    // }
 
-    /* Reads in the file as a binary file  */
-    /* Opening the File */
-    infile = fopen(argv[1], "rb");
+    // /* Reads in the file as a binary file  */
+    // /* Opening the File */
+    // infile = fopen(argv[1], "rb");
     
-    /* Error if file cannot be opened  */
-    if(!infile) {
-        printf("Error: couldn't open file %s. \n", argv[1]);
-        return 1;
-    }
+    // /* Error if file cannot be opened  */
+    // if(!infile) {
+    //     printf("Error: couldn't open file %s. \n", argv[1]);
+    //     return 1;
+    // }
 
-    /* Read contents of the file */
-    c = fgetc(infile); 
-    printf ("======   The contents of the file    ======\n"); 
-    while (c != EOF) 
-    { 
-        /* Prints the contents of file to console */
-        printf ("%c", c); 
-        c = fgetc(infile); 
-    } 
-    printf ("\n"); 
+    // /* Read contents of the file */
+    // c = fgetc(infile); 
+    // printf ("======   The contents of the file    ======\n"); 
+    // while (c != EOF) 
+    // { 
+    //     /* Prints the contents of file to console */
+    //     printf ("%c", c); 
+    //     c = fgetc(infile); 
+    // } 
+    // printf ("\n"); 
 
     /* Display hashed output */
     printf ("\n====== The hashed output of the file ======\n"); 
-
     
+    /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
+    
+
+    printf("\n");
     /* close the file  */
-    fclose(infile);
+    // fclose(infile);
+
     return 0;
 }
