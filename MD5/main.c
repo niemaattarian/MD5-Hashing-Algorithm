@@ -1,17 +1,33 @@
-/* Niema Attarian - MD5 Hashing Algorithm */
+/* 
+Niema Attarian - MD5 Hashing Algorithm 
+*
+*
+Compile and run the code using the following:
+    - make main
+    - ./main {text}
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 
-/* Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  */
-/* These will contain the hash  */
+/*  
+    Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  
+    These will contain the hash  
+*/
 uint32_t hash0, hash1, hash2, hash3;
 
-void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function takes in parameters of any initial messgae of any length */
+void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of any initial messgae of any length */
     
-    /* Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating  */
-    /* s specifies the per-round shift amounts  */
+    size_t initial_length = strlen(initial_message);    /* takes in the message as an argument and returns its length */
+    
+    /* Preparing the message */
+    uint8_t *message = NULL;
+    /*  
+        Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating 
+        s specifies the per-round shift amounts  
+    */
     uint32_t s[] = {
         7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
         5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
@@ -45,40 +61,43 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
     hash2 = 0x98badcfe;   // C
     hash3 = 0x10325476;   // D
 
-    
-    /*  Padding  */
-    /*  The initial step of allocating "1" bit to the message
+    /*  
+        Padding  
+        The initial step of allocating "1" bit to the message
         followed by a number of "0" bits until the length is congruent to 488, modulo 512 in bits
     */
 
-    /* Adapted from https://gist.github.com/creationix/4710780 */
-    /* Appending the "1" bit */
+    /*  
+        Adapted from https://gist.github.com/creationix/4710780
+        Appending the "1" bit 
+    */
     int new_length = ((((initial_length + 8) / 64) + 1) * 64) - 8;
 
-    /* Preparing the message */
-    uint8_t *message = NULL;
-
     /* Appending the "0" bits (allocating 64 extra bytes) */
-    message = calloc(new_length + 64, 1);
+    message = calloc(new_length + 64, 1);   /* calloc() allocates the memory and also initializes the allocated memory block to zero. */
 
     memcpy(message, initial_message, initial_length);
+
     /* Writing the "1" bit to the message */
     message[initial_length] = 128;
 
-    /* Appending the length */
-    /* Adding the initial bit message input at the end of the buffer in the form of 64-bit representation */
+    /* 
+        Appending the length
+        Adding the initial bit message input at the end of the buffer in the form of 64-bit representation 
+    */
     uint32_t bits_length = 8*initial_length;
     memcpy(message + new_length, &bits_length, 4); /* Creates a memory block copy */
 
     /*
         x >> y - Shifting the x value to the right y bits
         x << y - Shifting the x value to the left y bits
+
+        This function rotates x values left n-number of bits 
     */
-    /* This function rotates x values left n-number of bits */
     #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
     /* Process Message in 16-word blocks */
-    for(int chunk=0; chunk<new_length; chunk += (64))
+    for(int chunk = 0; chunk < new_length; chunk += 64)
     {
         /* Break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15 */
         uint32_t *M = (uint32_t *) (message + chunk);
@@ -86,6 +105,7 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
         // M[64] = '\0';
         // strncpy(M, &new_length[chunk*64], 64);
         // printf("Chunk(no: %d) %s\n", chunk, M);
+
         /* Initialising the MD Buffer */
         uint32_t A = hash0;
         uint32_t B = hash1;
@@ -95,14 +115,14 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
         /* Main loop */
         int32_t i;
         for(i = 0; i<64; i++) {
+            
             int32_t F, g;
 
-            /* Defining the auxiliary functions that take input of three 32-bit words */
-            /*
+            /* Defining the auxiliary functions that take input of three 32-bit words
                 & - bit-wise AND
                 | - bit-wise OR
                 ~ - bit-wise NOT
-                ^ - bit-wise TO THE POWER OF
+                ^ - bit-wise NOT EQUALS TO
             */
 
             if(0 <= i <= 15){
@@ -121,13 +141,14 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
                 F = C ^ (B | (~D));         /* C xor (B or (not D)) */
                 g = (7*i) % 16;
             }
+
             /* M[g] must be a 32-bits block */
             F = F + A + K[i] + M[g];
             A = D;
             D = C;
             C = B;
             B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
-          
+
         }// end main loop
 
         /* Add this chunk's hash to results so far */
@@ -135,16 +156,16 @@ void md5(uint8_t *initial_message, size_t initial_length){ /* This md5 function 
         hash1 = hash1 + B;
         hash2 = hash2 + C;
         hash3 = hash3 + D;
-    }
+
+    } // end for
 
 } // MD5
-
 
 int main(int argc, char *argv[]) {
 
     // FILE *infile;
-    // char filename[1000], c;
-
+    // char c;
+    
     // /* Return error if single file name isn't given  */
     // if (argc != 2){
     //     printf("Error: expected single filename as arguemnt.\n");
@@ -173,27 +194,23 @@ int main(int argc, char *argv[]) {
     // printf ("\n"); 
 
     /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
+    char *message = argv[1];
+ 
+    /* Calling the MD5 function and parameters */
+    md5(message);
 
-    char *msg = argv[1];
-    size_t len = strlen(msg);
- 
-    md5(msg, len);
- 
-    uint8_t *p;
- 
-    p=(uint8_t *)&hash0;
-    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash0);
- 
-    p=(uint8_t *)&hash1;
-    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash1);
- 
-    p=(uint8_t *)&hash2;
-    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash2);
- 
-    p=(uint8_t *)&hash3;
-    printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3], hash3);
+    uint8_t *append;
+
     /* Display hashed output */
     printf ("\n====== The hashed output of the file ======\n"); 
+    append=(uint8_t *)&hash0;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+    append=(uint8_t *)&hash1;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+    append=(uint8_t *)&hash2;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+    append=(uint8_t *)&hash3;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
     
     printf("\n");
     /* close the file  */
@@ -201,3 +218,6 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+// Input:   a
+// Output:  ab3efa27f761a726f6974bc1366fe7d0
