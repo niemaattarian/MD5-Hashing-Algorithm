@@ -18,10 +18,8 @@ make main
 ~~~
 * Run the file using the command:
 ~~~
-./main {filename}
+./main "insert text"
 ~~~
-
-**NOTE: I have included a test file named `test.txt`**
 
 The compiler used to help compile the code is the *GNU Compiler Collection (GCC)*. This compiler is an integrated distribution of compilers for many well known programming languages such as C, C++, Objective-C, etc [2].
 

@@ -69,16 +69,21 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
     hash2 = 0x98badcfe;   // C
     hash3 = 0x10325476;   // D
 
-    /*  
-        Padding  
-        The initial step of allocating "1" bit to the message
-        followed by a number of "0" bits until the length is congruent to 488, modulo 512 in bits
-    */
+   /*
+   *
+   * Padding  
+   * The initial step of allocating "1" bit to the message
+   * followed by a number of "0" bits until the length is congruent to 488, modulo 512 in bits
+   * 
+   */  
+  
 
-    /*  
-        Adapted from https://gist.github.com/creationix/4710780
-        Appending the "1" bit 
-    */
+   /*
+   *
+   * Adapted from https://gist.github.com/creationix/4710780
+   * Appending the "1" bit
+   *  
+   */ 
     int new_length = ((((initial_length + 8) / 64) + 1) * 64) - 8;
 
     /* Appending the "0" bits (allocating 64 extra bytes) */
@@ -167,6 +172,25 @@ int main(int argc, char *argv[]) {
 
     /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
     char *message = argv[1];
+
+    int i;
+    /*
+    *
+    * Command line arguments
+    * 
+    * 
+    */
+    if( argc >= 2 ){
+        printf("The arguments supplied are:\n");
+        for(i = 1; i < argc; i++)
+        {
+            printf("%s\t", argv[i]);
+        }
+    }
+    else
+    {
+        printf("argument list is empty.\n");
+    }
  
     /* Calling the MD5 function and parameters */
     md5(message);
