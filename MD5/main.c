@@ -208,13 +208,17 @@ int main(int argc, char *argv[]) {
     uint8_t *append;
 
     /* Display hashed output */
+    printf("Hashed Output: ");
 
     append=(uint8_t *)&hash0;
-    printf("Hashed Output: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+
     append=(uint8_t *)&hash1;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+
     append=(uint8_t *)&hash2;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+
     append=(uint8_t *)&hash3;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
     

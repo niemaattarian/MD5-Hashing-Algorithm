@@ -141,6 +141,25 @@ int32_t F, g;
 ### 5. Hashed Output
 The hashed message is outputted as A, B, C, D. This is because we begin with the low order byte of A and finish with the high end order byte of D [1].
 
+~~~
+uint8_t *append;
+
+printf("Hashed Output: ");
+
+append=(uint8_t *)&hash0;
+printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+
+append=(uint8_t *)&hash1;
+printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+
+append=(uint8_t *)&hash2;
+printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+
+append=(uint8_t *)&hash3;
+printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+
+~~~
+
 # Complexity
 Hashing functions are widely used for many reasons. These include securing passwords by hashing them, cryptocurrencies like Bitcoin, certifications and transferring/storing large chunks of data. Examples of the algorithms used mainly consist of *MD4*, *MD5*, *SHA-1* and *SHA-256*. Many of these hashing functions include one-way encryption functions that take an input of any size plaintext and generate a specific sized hashed output. These hashed outputs are extremely hard to decipher and crack. It is said to be computationally impossible to reverse engineer these functions. However, as complex as they seem, some of them (like the MD5 message digest) have been exposed and compromised in different ways.
 
@@ -190,9 +209,6 @@ Note the difference in these hashed outputs. Password storing systems will conta
 To prevent a lot of well-known attacks such as *colllision attacks*, *preimage attacks* and *birthday attacks*, increasing the randomness of hashing algorithms can reduce the likelihood of these attacks succeeding.
 
 In terms of the aforementioned collision attack, increasing the randomness will counter and reduce any risk. The method of message pre-processing can be useful before the hashing of the message. In doing this, the idea of the message being more random before hashing reduces redundancy in the input data leading to a much lower probability of finding a collision [11].
-
-# Conclusion
-
 
 # References
 
