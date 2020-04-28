@@ -1,8 +1,8 @@
 /* 
-Niema Attarian - MD5 Hashing Algorithm 
+*   Niema Attarian - MD5 Hashing Algorithm 
 *
 *
-Compile and run the code using the following:
+*   Compile and run the code using the following:
     - make main
     - ./main *insert text*
 */
@@ -13,16 +13,18 @@ Compile and run the code using the following:
 #include <stdint.h>
 
 /*
-    x >> y - Shifting the x value to the right y bits
-    x << y - Shifting the x value to the left y bits
-
-    This function rotates x values left n-number of bits 
-*/
+*
+*    x >> y - Shifting the x value to the right y bits
+*    x << y - Shifting the x value to the left y bits
+*
+*    This function rotates x values left n-number of bits 
+* 
+*/  
 #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
 /*  
-    Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  
-    These will contain the hash  
+*   Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  
+*   These will contain the hash  
 */
 uint32_t hash0, hash1, hash2, hash3;
 
@@ -33,8 +35,8 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
     /* Preparing the message */
     uint8_t *message = NULL;
     /*  
-        Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating 
-        s specifies the per-round shift amounts  
+    *   Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating 
+    *   s specifies the per-round shift amounts  
     */
     uint32_t s[] = {
         7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
@@ -95,8 +97,10 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
     message[initial_length] = 128;
 
     /* 
-        Appending the length
-        Adding the initial bit message input at the end of the buffer in the form of 64-bit representation 
+    *
+    *    Appending the length
+    *    Adding the initial bit message input at the end of the buffer in the form of 64-bit representation 
+    * 
     */
     uint32_t bits_length = 8 * initial_length;
     memcpy(message + new_length, &bits_length, 4); /* Creates a memory block copy */
@@ -124,10 +128,12 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
             int32_t F, g;
 
             /* Defining the auxiliary functions that take input of three 32-bit words
-                & - bit-wise AND
-                | - bit-wise OR
-                ~ - bit-wise NOT
-                ^ - bit-wise NOT EQUALS TO
+            *
+            *    & - bit-wise AND
+            *    | - bit-wise OR
+            *    ~ - bit-wise NOT
+            *    ^ - bit-wise NOT EQUALS TO
+            * 
             */
 
             if(i < 16){
@@ -150,7 +156,6 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
             /* M[g] must be a 32-bits block */
             uint32_t temp = D;
             //F = F + A + K[i] + M[g];
-            //A = D;
             D = C;
             C = B;
             B = B + LEFT_ROTATE_FUNCTION(F + A + K[i] + M[g], s[i]);
@@ -180,32 +185,32 @@ int main(int argc, char *argv[]) {
     * 
     * 
     */
-    if( argc >= 2 ){
-        printf("The arguments supplied are:\n");
-        for(i = 1; i < argc; i++)
-        {
-            printf("%s\t", argv[i]);
-        }
-    }
-    else
-    {
-        printf("argument list is empty.\n");
-    }
+    // if( argc >= 2 ){
+    //     printf("The arguments supplied are:\n");
+    //     for(i = 1; i < argc; i++)
+    //     {
+    //         printf("%s\t", argv[i]);
+    //     }
+    // }
+    // else
+    // {
+    //     printf("argument list is empty.\n");
+    // }
  
     /* Calling the MD5 function and parameters */
     md5(message);
 
     // Displaying input
-    printf ("======  The Input text   ======\n"); 
-    printf("%d\n", strlen(message));
+    printf("Input String: %s\n", argv[1]);
+    printf("String Length: %d\n", strlen(message));
+    printf("-----------------------------------------------\n");
 
     uint8_t *append;
 
     /* Display hashed output */
 
-    printf ("\n====== The hashed output ======\n"); 
     append=(uint8_t *)&hash0;
-    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+    printf("Hashed Output: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
     append=(uint8_t *)&hash1;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
     append=(uint8_t *)&hash2;
@@ -213,6 +218,26 @@ int main(int argc, char *argv[]) {
     append=(uint8_t *)&hash3;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
     
+    // int decnum, rem, i=0;
+    // char hexnum[32];
+    
+    // while(decnum!=0)
+    // {
+    //     rem = decnum%16;
+    //     if(rem<10)
+    //         rem = rem+48;
+    //     else
+    //         rem = rem+55;
+    //     hexnum[i] = rem;
+    //     i++;
+    //     decnum = decnum/16;
+    // }
+    // printf("\nEquivalent Value in Hexadecimal = ");
+    // for(i=i-1; i>=0; i--)
+    //     printf("%c", hexnum[i]);
+    // getch();
+
+
     printf("\n");
 
     // FILE *infile;

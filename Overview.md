@@ -1,6 +1,10 @@
 # Introduction
 I was required to write a program in the C programming language that calculates the MD5 hash digest of an input. This algorithm is specified in the 'Request For Comments 1321' document supplied by the the Internet Engineering Task Force [1].
 
+This repository is presented with a README.md with a quick description of what was tasked and what the MD5 is by definition. In the directory named `MD5` contains the C file of `main.c` where the code for the MD5 hash digest is located.
+
+Also in this repository is the code breakdown of the SHA-256 hashing algorithm located in the `vidoes` directory. This was done throughout the semester breaking down how hashing algorithms work and what's included, such as padding and unions.
+
 # Run
 The following steps will be a guide to download, compile and run the code.
 * Clone the repository using the following:
@@ -81,12 +85,58 @@ D:  76 54 32 10
 This process begins by initialising four auxiliary functions that take three 32-bit words as an input and output one 32-bit word.
 
 ~~~
-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
-#define H(x, y, z) ((x) ^ (y) ^ (z))
-#define I(x, y, z) ((y) ^ ((x) | (~z)))
+(B and C) or ((not B) and D)
+(D and B) or ((not D) and C)
+B xor C xor D
+C xor (B or (not D))
 ~~~
 
+These auxiliary functions are shown as:
+
+~~~
+(B & C) | ((~B) & D)
+(D & B) | ((~D) & C)
+B ^ C ^ D
+C ^ (B | (~D))
+~~~
+
+***************** write more here ****
+
+For each of the 512-bit chunk of padded message, it must be divided into sixteen 32-bit words as follows:
+
+~~~
+for(int chunk = 0; chunk < new_length; chunk += 64)
+    {
+        uint32_t *M = (uint32_t *) (message + chunk);
+~~~
+
+***************** write more here ****
+
+The main loop uses a 64-element table constructed from the sine function [1]. It done using the auxiliary functions to complete the logic.
+
+~~~
+for(i = 0; i < 64; i++) {
+            
+int32_t F, g;
+
+    if(i < 16){
+        F = (B & C) | ((~B) & D);
+        g = i;
+    }
+    else if(i < 32){
+        F = (D & B) | ((~D) & C);
+        g = ((5 * i) + 1) % 16;
+    }
+    else if(i < 48){
+        F = B ^ C ^ D;
+        g = ((3 * i) + 5) % 16;
+    }
+    else {
+        F = C ^ (B | (~D));
+        g = (7 * i) % 16;
+    }
+}
+~~~
 
 ### 5. Hashed Output
 The hashed message is outputted as A, B, C, D. This is because we begin with the low order byte of A and finish with the high end order byte of D [1].
