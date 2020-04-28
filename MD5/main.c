@@ -4,13 +4,21 @@ Niema Attarian - MD5 Hashing Algorithm
 *
 Compile and run the code using the following:
     - make main
-    - ./main {text}
+    - ./main *insert text*
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+
+/*
+    x >> y - Shifting the x value to the right y bits
+    x << y - Shifting the x value to the left y bits
+
+    This function rotates x values left n-number of bits 
+*/
+#define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
 /*  
     Code has been adapted from https://en.wikipedia.org/wiki/MD5#Pseudocode  
@@ -37,22 +45,22 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
 
     /* Use binary integer part of the sines of integers (in radians) as constants */
     const uint32_t K[] = {
-        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-        0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-        0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-        0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-        0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-        0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-        0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-        0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-        0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
     };
 
     /* Initialize variables:  */
@@ -85,16 +93,8 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
         Appending the length
         Adding the initial bit message input at the end of the buffer in the form of 64-bit representation 
     */
-    uint32_t bits_length = 8*initial_length;
+    uint32_t bits_length = 8 * initial_length;
     memcpy(message + new_length, &bits_length, 4); /* Creates a memory block copy */
-
-    /*
-        x >> y - Shifting the x value to the right y bits
-        x << y - Shifting the x value to the left y bits
-
-        This function rotates x values left n-number of bits 
-    */
-    #define LEFT_ROTATE_FUNCTION(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
     /* Process Message in 16-word blocks */
     for(int chunk = 0; chunk < new_length; chunk += 64)
@@ -114,7 +114,7 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
 
         /* Main loop */
         int32_t i;
-        for(i = 0; i<64; i++) {
+        for(i = 0; i < 64; i++) {
             
             int32_t F, g;
 
@@ -125,29 +125,31 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
                 ^ - bit-wise NOT EQUALS TO
             */
 
-            if(0 <= i <= 15){
+            if(i < 16){
                 F = (B & C) | ((~B) & D);   /* (B and C) or ((not B) and D) */
                 g = i;
             }
-            else if(16 <= i <= 31){
+            else if(i < 32){
                 F = (D & B) | ((~D) & C);   /* (D and B) or ((not D) and C) */
-                g = (5*i + 1) % 16;
+                g = ((5 * i) + 1) % 16;
             }
-            else if(32 <= i <= 47){
+            else if(i < 48){
                 F = B ^ C ^ D;              /* B xor C xor D */
-                g = (3*i + 5) % 16;
+                g = ((3 * i) + 5) % 16;
             }
-            else if(48 <= i <= 63){
+            else {
                 F = C ^ (B | (~D));         /* C xor (B or (not D)) */
-                g = (7*i) % 16;
+                g = (7 * i) % 16;
             }
 
             /* M[g] must be a 32-bits block */
-            F = F + A + K[i] + M[g];
-            A = D;
+            uint32_t temp = D;
+            //F = F + A + K[i] + M[g];
+            //A = D;
             D = C;
             C = B;
-            B = B + LEFT_ROTATE_FUNCTION(F, s[i]);
+            B = B + LEFT_ROTATE_FUNCTION(F + A + K[i] + M[g], s[i]);
+            A = temp;
 
         }// end main loop
 
@@ -162,6 +164,32 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
 } // MD5
 
 int main(int argc, char *argv[]) {
+
+    /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
+    char *message = argv[1];
+ 
+    /* Calling the MD5 function and parameters */
+    md5(message);
+
+    // Displaying input
+    printf ("======  The Input text   ======\n"); 
+    printf("%d\n", strlen(message));
+
+    uint8_t *append;
+
+    /* Display hashed output */
+
+    printf ("\n====== The hashed output ======\n"); 
+    append=(uint8_t *)&hash0;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+    append=(uint8_t *)&hash1;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+    append=(uint8_t *)&hash2;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+    append=(uint8_t *)&hash3;
+    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+    
+    printf("\n");
 
     // FILE *infile;
     // char c;
@@ -193,31 +221,8 @@ int main(int argc, char *argv[]) {
     // } 
     // printf ("\n"); 
 
-    /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
-    char *message = argv[1];
- 
-    /* Calling the MD5 function and parameters */
-    md5(message);
-
-    uint8_t *append;
-
-    /* Display hashed output */
-    printf ("\n====== The hashed output of the file ======\n"); 
-    append=(uint8_t *)&hash0;
-    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
-    append=(uint8_t *)&hash1;
-    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
-    append=(uint8_t *)&hash2;
-    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
-    append=(uint8_t *)&hash3;
-    printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
-    
-    printf("\n");
     /* close the file  */
     // fclose(infile);
 
     return 0;
 }
-
-// Input:   a
-// Output:  ab3efa27f761a726f6974bc1366fe7d0
