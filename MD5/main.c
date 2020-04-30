@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <ctype.h>
+#include <unistd.h>
 
 /*
 *
@@ -174,29 +176,9 @@ void md5(uint8_t *initial_message){ /* This md5 function takes in parameters of 
 } // MD5
 
 int main(int argc, char *argv[]) {
-
     /* var char digest[16] := hash0, append hash1, append hash2, append hash3 (Output is in little-endian) */
-    char *message = argv[1];
+    char *message = argv[1]; 
 
-    int i;
-    /*
-    *
-    * Command line arguments
-    * 
-    * 
-    */
-    // if( argc >= 2 ){
-    //     printf("The arguments supplied are:\n");
-    //     for(i = 1; i < argc; i++)
-    //     {
-    //         printf("%s\t", argv[i]);
-    //     }
-    // }
-    // else
-    // {
-    //     printf("argument list is empty.\n");
-    // }
- 
     /* Calling the MD5 function and parameters */
     md5(message);
 
@@ -221,61 +203,146 @@ int main(int argc, char *argv[]) {
 
     append=(uint8_t *)&hash3;
     printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
-    
-    // int decnum, rem, i=0;
-    // char hexnum[32];
-    
-    // while(decnum!=0)
-    // {
-    //     rem = decnum%16;
-    //     if(rem<10)
-    //         rem = rem+48;
-    //     else
-    //         rem = rem+55;
-    //     hexnum[i] = rem;
-    //     i++;
-    //     decnum = decnum/16;
-    // }
-    // printf("\nEquivalent Value in Hexadecimal = ");
-    // for(i=i-1; i>=0; i--)
-    //     printf("%c", hexnum[i]);
-    // getch();
-
 
     printf("\n");
-
-    // FILE *infile;
-    // char c;
+   
     
-    // /* Return error if single file name isn't given  */
-    // if (argc != 2){
-    //     printf("Error: expected single filename as arguemnt.\n");
-    //     return 1;
-    // }
+    /*
+    *
+    * Command line arguments
+    * Adapted from http://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
+    * 
+    */
+    int aflag = 0;
+    int bflag = 0;
+    char *cvalue = NULL;
+    int index;
+    int c;
+    char *optarg;
+    int optopt;
+    int optind;
 
-    // /* Reads in the file as a binary file  */
-    // /* Opening the File */
-    // infile = fopen(argv[1], "rb");
-    
-    // /* Error if file cannot be opened  */
-    // if(!infile) {
-    //     printf("Error: couldn't open file %s. \n", argv[1]);
-    //     return 1;
-    // }
+    int opterr = 0;
+ 
+    while ((c = getopt (argc, argv, "htc:")) != -1)
+        switch (c)
+        {
+        case 'h':   // shows help commands
+            aflag = 1;
+            printf("\n\n\ncompile: make main\n");
+            printf("usage: ./main [text] \n");
+            printf("-h\t\t\t\t\t:shows help commands\n");
+            printf("-t\t\t\t\t\t:runs tests of known MD5 hashes\n");
 
-    // /* Read contents of the file */
-    // c = fgetc(infile); 
-    // printf ("======   The contents of the file    ======\n"); 
-    // while (c != EOF) 
-    // { 
-    //     /* Prints the contents of file to console */
-    //     printf ("%c", c); 
-    //     c = fgetc(infile); 
-    // } 
-    // printf ("\n"); 
+            printf("\ncompiler commands: gcc [option]\n");
+            printf("-v\t\t\t\t\t:displays compiler version\n--version\n");
+        
+            break;
+        case 't':   // shows test cases
+            bflag = 1;
+            printf("\n\n\nMD5 test examples:\n------------------\n");
+            
+            printf("MD5 input of () should output d41d8cd98f00b204e9800998ecf8427e\n");
+            md5((uint8_t *)"");
+            append=(uint8_t *)&hash0;
+            printf("Input: \nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
 
-    /* close the file  */
-    // fclose(infile);
+            printf("MD5 input of (a) should output 0cc175b9c0f1b6a831c399e269772661\n");
+            md5((uint8_t *)"a");
+            append=(uint8_t *)&hash0;
+            printf("Input: a \nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
 
+            printf("MD5 input of (abc) should output 900150983cd24fb0d6963f7d28e17f72\n");
+            md5((uint8_t *)"abc");
+            append=(uint8_t *)&hash0;
+            printf("Input: abc\nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
+
+            printf("MD5 input of (message digest) should output f96b697d7cb7938d525a2f31aaf161d0\n");
+            md5((uint8_t *)"message digest");
+            append=(uint8_t *)&hash0;
+            printf("Input: message digest\nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
+
+            printf("MD5 input of (abcdefghijklmnopqrstuvwxyz) should output c3fcd3d76192e4007dfb496cca67e13b\n");
+            md5((uint8_t *)"abcdefghijklmnopqrstuvwxyz");
+            append=(uint8_t *)&hash0;
+            printf("Input: abcdefghijklmnopqrstuvwxyz\nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
+
+            printf("MD5 input of (ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789) should output d174ab98d277d9f5a5611c2c9f419d9f\n");
+            md5((uint8_t *)"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+            append=(uint8_t *)&hash0;
+            printf("Input: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
+
+            printf("MD5 input of (12345678901234567890123456789012345678901234567890123456789012345678901234567890) should output 57edf4a22be3c955ac49da2e2107b67a\n");
+            md5((uint8_t *)"12345678901234567890123456789012345678901234567890123456789012345678901234567890");
+            append=(uint8_t *)&hash0;
+            printf("Input: 12345678901234567890123456789012345678901234567890123456789012345678901234567890\nOutput: %2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash0);
+            append=(uint8_t *)&hash1;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash1);
+            append=(uint8_t *)&hash2;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash2);
+            append=(uint8_t *)&hash3;
+            printf("%2.2x%2.2x%2.2x%2.2x", append[0], append[1], append[2], append[3], hash3);
+            printf("\n\n");
+            break;
+        case 'c':
+            cvalue = optarg;
+            break;
+        case '?':   // Displays unknown command output for invalid commands
+            if (optopt == 'c')
+            fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+            else if (isprint (optopt))
+            fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            else
+            fprintf (stderr,
+                    "Unknown option character `\\x%x'.\n",
+                    optopt);
+            return 1;
+        default:
+            abort ();
+        }
+    // for (index = optind; index < argc; index++)
+    //     printf ("Non-option argument %s\n", argv[index]);
     return 0;
 }
