@@ -27,7 +27,7 @@ make main
 
 The compiler used to help compile the code is the *GNU Compiler Collection (GCC)*. This compiler is an integrated distribution of compilers for many well known programming languages such as C, C++, Objective-C, etc [2].
 
-The following steps will be a guide to download and install the compiler:
+The following steps will be a guide to download and install the compiler I used on my operating system:
 
 #### Linux
 * Open up a terminal and enter:
@@ -47,6 +47,25 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ~~~
 
 # Test
+Running the test suite is as follows:
+
+~~~
+~~~
+
+This command should display a number of MD5 test examples as such:
+
+~~
+MD5 examples:
+MD5 ("") = d41d8cd98f00b204e9800998ecf8427e
+MD5 ("a") = 0cc175b9c0f1b6a831c399e269772661
+MD5 ("abc") = 900150983cd24fb0d6963f7d28e17f72
+MD5 ("message digest") = f96b697d7cb7938d525a2f31aaf161d0
+MD5 ("abcdefghijklmnopqrstuvwxyz") = c3fcd3d76192e4007dfb496cca67e13b
+MD5 ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") =
+d174ab98d277d9f5a5611c2c9f419d9f
+MD5 ("123456789012345678901234567890123456789012345678901234567890123456
+78901234567890") = 57edf4a22be3c955ac49da2e2107b67a
+~~
 
 # Algorithm
 The MD5 algorithm takes in a message input of arbitrary length producing an output of 128-bit message digest. It is considered to be a pseudorandom hashing algorithm meaning it is computationally impossible that the MD5 message digest, of different input, can produce two messages of the exact same message digest [3]. Any slight change of the string input can drastically change the hashed output. Below is a small example;
@@ -100,8 +119,6 @@ B ^ C ^ D
 C ^ (B | (~D))
 ~~~
 
-***************** write more here ****
-
 For each of the 512-bit chunk of padded message, it must be divided into sixteen 32-bit words as follows:
 
 ~~~
@@ -109,8 +126,6 @@ for(int chunk = 0; chunk < new_length; chunk += 64)
     {
         uint32_t *M = (uint32_t *) (message + chunk);
 ~~~
-
-***************** write more here ****
 
 The main loop uses a 64-element table constructed from the sine function [1]. It done using the auxiliary functions to complete the logic.
 
@@ -137,6 +152,10 @@ int32_t F, g;
     }
 }
 ~~~
+
+The bit rotation is then carried out here and stored in a temproary variable. 
+
+The hashing of the each chunk is then added to the results. This will be used for the output.
 
 ### 5. Hashed Output
 The hashed message is outputted as A, B, C, D. This is because we begin with the low order byte of A and finish with the high end order byte of D [1].
@@ -175,7 +194,7 @@ Rainbow Tables are essentially huge tables filled with predefined hash values us
 
 ![7](images/rainbow_table.jpg)[7]
 
-The attacker hashes and loads a large number of predefined hashed passwords, some of which would be commonly used and compares them with the stored hashed passwords in a system search for a match of hashes. This method is used to crack passwords in the shortest amount of time compared to  other techniques. Although this is an efficient method for cracking passwords, it is highly storage inefficient [6]. The rainbow table attacks have been used on applications using MD5 and SHA-1 in the past, hence, storing passwords using these algorithms aforementioned are highly advised against.
+The attacker loads a large number of predefined hashed passwords, some of which would be commonly used and compares them with the stored hashed passwords in a system search for a match of hashes. This method is used to crack passwords in the shortest amount of time compared to  other techniques. Although this is an efficient method for cracking passwords, it is highly storage inefficient [6]. The rainbow table attacks have been used on applications using MD5 and SHA-1 in the past, hence, storing passwords using these algorithms aforementioned are highly advised against.
 
 ##### 2. Collision Attacks
 Collision attacks express circumstances where two non-identical data files or sets produce an identical hash value when calculated. Although considered computationally infeasible for two different files to produce an identical hashed output, in 2005, hashing collision was achieved by Xiaoyun Wang and Hongbo Yu of the Shandong University in China. They presented their research findings detailing how they the cracked the MD5 hash function [8][9].
