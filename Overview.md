@@ -223,24 +223,35 @@ In terms of the aforementioned collision attack, increasing the randomness will 
 
 # References
 
+This reference relates to the *rfc* document. It proved useful for many references including the code and the algorithm steps.
 [1] Rivest, R., 1992. RFC1321: The MD5 message-digest algorithm.
 
+This referenves relates to the *GNU Compiler Collection*. This is the compiler I used for my project.
 [2] Stallman, R.M., 1988. Using the GNU Compiler Collection. For GCC version, 4(2).
 
+This reference, like the first reference, relates to the breakdown of the MD5 algorithm.
 [3] Rivest, R. and Dusse, S., 1992. The MD5 message-digest algorithm.
 
+This reference relates to the capabilities of the MD5 algorithm which I found useful in terms of describing the algorithm and complexity of the hashing.
 [4] Gupta, P. and Kumar, S., 2014. A comparative analysis of SHA and MD5 algorithm. architecture, 1, p.5.
 
+This reference relates to the security analysis of the MD5 in terms of password storage.
 [5] Ah Kioon, M.C., Wang, Z.S. and Deb Das, S., 2013. Security analysis of md5 algorithm in password storage. In Applied Mechanics and Materials (Vol. 347, pp. 2706-2711). Trans Tech Publications Ltd.
 
+This reference details the rainbow table attacks on hashing algorithms which I detailed in the complexity.
 [6] Kumar, H., Kumar, S., Joseph, R., Kumar, D., Singh, S.K.S. and Kumar, P., 2013, April. Rainbow table to crack password using MD5 hashing algorithm. In 2013 IEEE Conference on Information & Communication Technologies (pp. 433-439). IEEE.
 
+A table of rainbow attacks example
 [7] Privacy Canada. 2020. Rainbow Tables - Privacy Canada. [online] Available at: <https://privacycanada.net/hash-functions/rainbow-tables/> [Accessed 25 April 2020].
 
+This reference details more of the weakness and vulnerablities of the hashing algorithm
 [8] Schmitt, V. and Jordaan, J., 2013. Establishing the validity of MD5 and SHA-1 hashing in digital forensic practice in light of recent research demonstrating cryptographic weaknesses in these algorithms. International Journal of Computer Applications, 68(23).
 
+This reference describes how the MD5 was susceptible to collision attacks and proved it.
 [9] Wang, X. and Yu, H., 2005, May. How to break MD5 and other hash functions. In Annual international conference on the theory and applications of cryptographic techniques (pp. 19-35). Springer, Berlin, Heidelberg.
 
+This reference details collision attacks and the impact on the MD5 algorithms.
 [10] Thompson, E., 2005. MD5 collisions and the impact on computer forensics. Digital investigation, 2(1), pp.36-40.
 
+This references relates to the countermeasures section of the document on how to prevent collision attacks.
 [11] Peer to Patent. 2020. Method For Preventing And Detecting Hash Collisions Of Data During The Data Transmission - Peer To Patent. [online] Available at: <https://www.peertopatent.org/method-for-preventing-and-detecting-hash-collisions-of-data-during-the-data-transmission/> [Accessed 25 April 2020].
