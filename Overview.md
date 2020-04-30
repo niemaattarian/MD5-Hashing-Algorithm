@@ -3,7 +3,7 @@ I was required to write a program in the C programming language that calculates 
 
 This repository is presented with a README.md with a quick description of what was tasked and what the MD5 is by definition. In the directory named `MD5` contains the C file of `main.c` where the code for the MD5 hash digest is located.
 
-Also in this repository is the code breakdown of the SHA-256 hashing algorithm located in the `vidoes` directory. This was done throughout the semester breaking down how hashing algorithms work and what's included, such as padding and unions.
+Also in this repository is the code breakdown of the SHA-256 hashing algorithm located in the `videos` directory. This was done throughout the semester breaking down how hashing algorithms work and what's included, such as padding and unions.
 
 # Run
 The following steps will be a guide to download, compile and run the code.
@@ -29,7 +29,7 @@ The compiler used to help compile the code is the *GNU Compiler Collection (GCC)
 
 The following steps will be a guide to download and install the compiler I used on my operating system:
 
-#### Linux
+#### Ubuntu 20.04
 * Open up a terminal and enter:
 ~~~
 $ sudo apt install gcc
@@ -60,7 +60,7 @@ This command should display a number of MD5 test examples as such:
 ![](images/test-examples.png)
 
 # Algorithm
-The MD5 algorithm takes in a message input of arbitrary length producing an output of 128-bit message digest. It is considered to be a pseudorandom hashing algorithm meaning it is computationally impossible that the MD5 message digest, of different input, can produce two messages of the exact same message digest [3]. Any slight change of the string input can drastically change the hashed output. Below is a small example;
+The MD5 algorithm takes in a message input of arbitrary length producing an output of 128-bit message digest. It is considered to be a pseudo-random hashing algorithm meaning it is computationally impossible that the MD5 message digest, of different input, can produce two messages of the exact same message digest [3]. Any slight change of the string input can drastically change the hashed output. Below is a small example;
 ~~~
 String Input:   abc
 Hashed Output:  900150983cd24fb0d6963f7d28e17f72
@@ -145,7 +145,7 @@ int32_t F, g;
 }
 ~~~
 
-The bit rotation is then carried out here and stored in a temproary variable. 
+The bit rotation is then carried out here and stored in a temporary variable. 
 
 The hashing of the each chunk is then added to the results. This will be used for the output.
 
@@ -217,7 +217,7 @@ Hashed Output:  1ba15b93d9409a0d4bf77f967cdbf9d6
 Note the difference in these hashed outputs. Password storing systems will contain a list of predefined salts which they add to these passwords. This method makes it extremely difficult for anyone to preform any Dictionary/Rainbow Table attacks.
 
 ##### 2. Increased Randomness
-To prevent a lot of well-known attacks such as *colllision attacks*, *preimage attacks* and *birthday attacks*, increasing the randomness of hashing algorithms can reduce the likelihood of these attacks succeeding.
+To prevent a lot of well-known attacks such as *collision attacks*, *pre-image attacks* and *birthday attacks*, increasing the randomness of hashing algorithms can reduce the likelihood of these attacks succeeding.
 
 In terms of the aforementioned collision attack, increasing the randomness will counter and reduce any risk. The method of message pre-processing can be useful before the hashing of the message. In doing this, the idea of the message being more random before hashing reduces redundancy in the input data leading to a much lower probability of finding a collision [11].
 
