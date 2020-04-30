@@ -25,7 +25,7 @@ The compiler used to help compile the code is the *GNU Compiler Collection (GCC)
 
 The following steps will be a guide to download and install the compiler:
 
-#### Linux
+#### Ubuntu 20.04
 * Open up a terminal and enter:
 ~~~
 $ sudo apt install gcc
@@ -47,7 +47,7 @@ A detailed overview of this project can be found at:
 
 [Overview.md](https://github.com/niemaattarian/Theory-Of-Algorithms/blob/master/Overview.md)
 
-This decouments details how to run the algorithm, command line arguemnts and tests as specified in the brief, a detailed breakdown of the algorithm including diagrams, the complexity of the algorithm including the complexity of ways to breach the algorithm and relevant references.
+This docoument details how to run the algorithm, command line arguemnts and tests as specified in the brief, a detailed breakdown of the algorithm including diagrams with relevant research, the complexity of the algorithm including the complexity of ways to breach the algorithm and relevant references.
 
 # References
 
